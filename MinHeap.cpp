@@ -4,22 +4,37 @@
 
 template <typename T>
 class MinHeap {
+ public:
+  MinHeap() : data_(kCapacity), size_(0) {}
+
+  std::optional<T> Top();
+
+  std::optional<T> ExtractMin();
+
+  void Insert(T value);
+
+  bool Empty() const;
+
+ private:
   static constexpr size_t kCapacity = 8;
   static constexpr size_t kTopIdx = 1;
   std::vector<T> data_;
   size_t size_;
+  void SiftUp(size_t index);
 
- public:
-  MinHeap() : data_(kCapacity), size_(0) {}
+  void SiftDown(size_t index);
+};
 
-  std::optional<T> Top() {
+template <typename T>
+std::optional<T> MinHeap<T>::Top() {
     if (size_ == 0) {
       return std::nullopt;
     }
     return data_[kTopIdx];
   }
 
-  std::optional<T> ExtractMin() {
+template <typename T>
+std::optional<T> MinHeap<T>::ExtractMin() {
     if (size_ == 0) {
       return std::nullopt;
     }
@@ -29,7 +44,8 @@ class MinHeap {
     return data_[size_ + 1];
   }
 
-  void Insert(T value) {
+template <typename T>
+void MinHeap<T>::Insert(T value) {
     if (size_ == data_.size() - 1) {
       data_.resize(2 * size_);
     }
@@ -37,10 +53,11 @@ class MinHeap {
     SiftUp(size_);
   }
 
-  bool Empty() { return size_ == 0; }
+template <typename T>
+bool MinHeap<T>::Empty() const { return size_ == 0; }
 
- private:
-  void SiftUp(size_t index) {
+template <typename T>
+void MinHeap<T>::SiftUp(size_t index) {
     if (index > kTopIdx) {
       size_t parent = index / 2;
       if (data_[index] < data_[parent]) {
@@ -50,7 +67,8 @@ class MinHeap {
     }
   }
 
-  void SiftDown(size_t index) {
+template <typename T>
+void MinHeap<T>::SiftDown(size_t index) {
     size_t i_min = index;
     size_t i_left_child = index * 2;
     size_t i_right_child = index * 2 + 1;
@@ -65,7 +83,6 @@ class MinHeap {
       SiftDown(i_min);
     }
   }
-};
 
 template <typename T>
 std::vector<T> Merge(const std::vector<std::vector<T>>& arrays) {
@@ -84,7 +101,7 @@ std::vector<T> Merge(const std::vector<std::vector<T>>& arrays) {
   result.reserve(size);
 
   while (!hp.Empty()) {
-    auto[value, array_i] = *hp.ExtractMin();
+    auto [value, array_i] = *hp.ExtractMin();
     result.push_back(value);
     ++indexes[array_i];
     if (indexes[array_i] < arrays[array_i].size()) {
@@ -94,4 +111,3 @@ std::vector<T> Merge(const std::vector<std::vector<T>>& arrays) {
 
   return result;
 }
-
